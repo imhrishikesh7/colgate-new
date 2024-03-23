@@ -10,10 +10,12 @@ import Documents from "../assets/draft.svg";
 import PowerOff from "../assets/power-off-solid.svg";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
-
+import { AnimatePresence } from "framer-motion";
+import { motion } from 'framer-motion';
+import "../App.css"
 const Container = styled.div`
   position: fixed;
-
+  z-index:1000;
   .active {
     border-right: 4px solid var(--white);
 
@@ -67,7 +69,6 @@ const SidebarContainer = styled.div`
   margin-top: 1rem;
   border-radius: 0 30px 30px 0;
   padding: 1rem 0;
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -78,7 +79,7 @@ const SidebarContainer = styled.div`
 
 const Logo = styled.div`
   width: 2rem;
-
+  z-index:10001;
   img {
     width: 100%;
     height: auto;
@@ -86,7 +87,7 @@ const Logo = styled.div`
 `;
 
 const SlickBar = styled.ul`
-  color: var(--white);
+  color: white;
   list-style: none;
   display: flex;
   flex-direction: column;
@@ -106,7 +107,7 @@ const SlickBar = styled.ul`
 
 const Item = styled(NavLink)`
   text-decoration: none;
-  color: var(--white);
+  color:white;
   width: 100%;
   padding: 1rem 0;
   cursor: pointer;
@@ -139,29 +140,25 @@ const Text = styled.span`
 `;
 
 const Profile = styled.div`
-  width: ${(props) => (props.clicked ? "14rem" : "3rem")};
+  width:300px;
   height: 3rem;
-
+  z-index:1000;
   padding: 0.5rem 1rem;
   /* border: 2px solid var(--white); */
   border-radius: 20px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: ${(props) => (props.clicked ? "9rem" : "0")};
-
   background-color: var(--black);
   color: var(--white);
-
+  margin-left:100px;
   transition: all 0.3s ease;
 
   img {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     cursor: pointer;
-
     &:hover {
       border: 2px solid var(--grey);
       padding: 2px;
@@ -177,14 +174,11 @@ const Details = styled.div`
 
 const Name = styled.div`
   padding: 0 1.5rem;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
+  widith:"100%";
+  display: block;
   h4 {
-    display: inline-block;
+    display: block;
+    font-size:"12px";
   }
 
   a {
@@ -197,7 +191,22 @@ const Name = styled.div`
     }
   }
 `;
-
+const DropdownMenu = styled(motion.div)`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--black);
+  padding: 0.5rem;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  display: none;
+  ${Item}:hover & {
+    display: block;
+  }
+`;
+const DropdownItem = styled(NavLink)`
+  /* Your styles */
+`;
 const Logout = styled.button`
   border: none;
   width: 2rem;
@@ -224,16 +233,12 @@ const Sidebar = () => {
 
   const [profileClick, setprofileClick] = useState(false);
   const handleProfileClick = () => setprofileClick(!profileClick);
-
+  const [active,setActive]=useState(false);
   return (
     <Container>
-      <Button clicked={click} onClick={() => handleClick()}>
-        Click
-      </Button>
       <SidebarContainer>
-        <Logo>
-          <img src={logo} alt="logo" />
-        </Logo>
+      <Button clicked={click} onClick={() => handleClick()}>
+      </Button>  
         <SlickBar clicked={click}>
           <Item
             onClick={() => setClick(false)}
@@ -245,56 +250,64 @@ const Sidebar = () => {
             <Text clicked={click}>Home</Text>
           </Item>
           <Item
+          onMouseOver={()=>setActive(true)}
+          onMouseLeave={()=>setActive(false)}
             onClick={() => setClick(false)}
             activeClassName="active"
-            to="/team"
+            to="/annual-reports"
           >
-            <img src={Team} alt="Team" />
-            <Text clicked={click}>Team</Text>
+            <img src={Team} alt="Annual Report" />
+            <Text clicked={click}>{"Annual Reports"}</Text>
+         <div className="helper"></div>
+         {active&&<motion.div initial={{opacity:0,x:10}} animate={{opacity:1,x:-10}} exit={{opacity:0,x:10}} transition={{duration: 0.5}}>
+         <div className="square-rotate"></div>
+        
+         <div className="container-dropdown">
+           <span>Powering a billion smile</span>
+           <span>About the report</span>
+           <span>From Md and CEO</span>
+           <span>Brand With a Purpose</span>
+          </div>
+         </motion.div>
+}
+         
           </Item>
           <Item
             onClick={() => setClick(false)}
             activeClassName="active"
-            to="/calender"
+            to="/esg-report"
           >
-            <img src={Calender} alt="Calender" />
-            <Text clicked={click}>Calender</Text>
+            <img src={Calender} alt="ESG Report" />
+            <Text clicked={click}>ESG Report</Text>
           </Item>
           <Item
             onClick={() => setClick(false)}
             activeClassName="active"
-            to="/documents"
+            to="/social"
           >
-            <img src={Documents} alt="Documents" />
-            <Text clicked={click}>Documents</Text>
+            <img src={Documents} alt="Social" />
+            <Text clicked={click}>Social</Text>
           </Item>
           <Item
             onClick={() => setClick(false)}
             activeClassName="active"
-            to="/projects"
+            to="/statutory-reports"
           >
-            <img src={Projects} alt="Projects" />
-            <Text clicked={click}>Projects</Text>
+            <img src={Projects} alt="Statutory Reports" />
+            <Text clicked={click}>Statutory Reports</Text>
+          </Item>
+          <Item
+            onClick={() => setClick(false)}
+            activeClassName="active"
+            to="/financial-reports"
+          >
+            <img src={Projects} alt="Financial Reports" />
+            <Text clicked={click}>Financial Reports</Text>
           </Item>
         </SlickBar>
-
-        <Profile clicked={profileClick}>
-          <img
-            onClick={() => handleProfileClick()}
-            src="https://picsum.photos/200"
-            alt="Profile"
-          />
-          <Details clicked={profileClick}>
-            <Name>
-              <h4>Jhon&nbsp;Doe</h4>
-              <a href="/#">view&nbsp;profile</a>
-            </Name>
-
-            <Logout>
-              <img src={PowerOff} alt="logout" />
-            </Logout>
-          </Details>
-        </Profile>
+        <Logo>
+          <img src="/CP.svg"/>
+        </Logo>
       </SidebarContainer>
     </Container>
   );
